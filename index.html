@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Instagram Growth Simulator</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+<div id="root"></div>
+
+<script type="text/javascript">
+const { useState } = React;
+const { motion } = window["framer-motion"];
+
+function App() {
+  const [username, setUsername] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [followers, setFollowers] = useState(1200);
+  const [result, setResult] = useState(null);
+
+  const packages = [1000, 5000, 10000, 50000, 100000];
+
+  const simulateGrowth = (amount) => {
+    setLoading(true);
+    setResult(null);
+
+    setTimeout(() => {
+      let start = followers;
+      let end = followers + amount;
+      let current = start;
+
+      const interval = setInterval(() => {
+        current += Math.ceil(amount / 40);
+        if (current >= end) {
+          current = end;
+          clearInterval(interval);
+          setLoading(false);
+          setResult({
+            newFollowers: end,
+            growth: ((amount / start) * 100).toFixed(1),
+          });
+          setFollowers(end);
+        }
+        setFollowers(current);
+      }, 40);
+    }, 2000);
+  };
+
+  return (
+    React.createElement("div", {
+      className: "min-h-screen flex flex-col items-center p-6 text-white",
+      style: {background: "linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)"}
+    }, 
+      React.createElement("h1", {className:"text-2xl mb-4"}, "Instagram Growth Simulator"),
+      
+      React.createElement("input", {
+        placeholder:"@username",
+        value:username,
+        onChange:(e)=>setUsername(e.target.value),
+        className:"p-2 text-black rounded mb-4"
+      }),
+
+      packages.map(p =>
+        React.createElement("button", {
+          key:p,
+          onClick:()=>simulateGrowth(p),
+          className:"block mb-2 bg-white text-black p-2 rounded"
+        }, "+" + p + " followers")
+      ),
+
+      loading && React.createElement("p", null, "Simulating..."),
+
+      React.createElement("h2", null, "Followers: " + followers),
+
+      result && React.createElement("div", null,
+        React.createElement("p", null, "New total: " + result.newFollowers),
+        React.createElement("p", null, "Growth: +" + result.growth + "%")
+      )
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+
+</body>
+</html>
