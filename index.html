@@ -1,90 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Instagram Growth Simulator</title>
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<title>Instagram Simulator</title>
+
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+
 </head>
 
 <body>
 <div id="root"></div>
 
-<script type="text/javascript">
+<script>
 const { useState } = React;
-const { motion } = window["framer-motion"];
 
 function App() {
   const [username, setUsername] = useState("");
-  const [loading, setLoading] = useState(false);
   const [followers, setFollowers] = useState(1200);
-  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const packages = [1000, 5000, 10000, 50000, 100000];
-
-  const simulateGrowth = (amount) => {
+  const simulate = (amount) => {
     setLoading(true);
-    setResult(null);
 
     setTimeout(() => {
-      let start = followers;
+      let current = followers;
       let end = followers + amount;
-      let current = start;
 
       const interval = setInterval(() => {
-        current += Math.ceil(amount / 40);
+        current += Math.ceil(amount / 30);
+
         if (current >= end) {
           current = end;
           clearInterval(interval);
           setLoading(false);
-          setResult({
-            newFollowers: end,
-            growth: ((amount / start) * 100).toFixed(1),
-          });
-          setFollowers(end);
         }
+
         setFollowers(current);
-      }, 40);
-    }, 2000);
+      }, 50);
+
+    }, 1000);
   };
 
-  return (
-    React.createElement("div", {
-      className: "min-h-screen flex flex-col items-center p-6 text-white",
-      style: {background: "linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)"}
-    }, 
-      React.createElement("h1", {className:"text-2xl mb-4"}, "Instagram Growth Simulator"),
-      
-      React.createElement("input", {
-        placeholder:"@username",
-        value:username,
-        onChange:(e)=>setUsername(e.target.value),
-        className:"p-2 text-black rounded mb-4"
-      }),
+  return React.createElement("div", {
+    style: {
+      minHeight: "100vh",
+      background: "linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)",
+      color: "white",
+      textAlign: "center",
+      padding: "20px"
+    }
+  },
 
-      packages.map(p =>
+    React.createElement("h1", null, "Instagram Growth Simulator"),
+
+    React.createElement("input", {
+      placeholder: "@username",
+      value: username,
+      onChange: e => setUsername(e.target.value),
+      style: {padding:"10px", margin:"10px", color:"black"}
+    }),
+
+    React.createElement("div", null,
+      [1000,5000,10000].map(n =>
         React.createElement("button", {
-          key:p,
-          onClick:()=>simulateGrowth(p),
-          className:"block mb-2 bg-white text-black p-2 rounded"
-        }, "+" + p + " followers")
-      ),
-
-      loading && React.createElement("p", null, "Simulating..."),
-
-      React.createElement("h2", null, "Followers: " + followers),
-
-      result && React.createElement("div", null,
-        React.createElement("p", null, "New total: " + result.newFollowers),
-        React.createElement("p", null, "Growth: +" + result.growth + "%")
+          key:n,
+          onClick:()=>simulate(n),
+          style:{margin:"5px", padding:"10px"}
+        }, "+"+n)
       )
-    )
+    ),
+
+    loading
+      ? React.createElement("p", null, "Simulando...")
+      : React.createElement("h2", null, "Followers: " + followers)
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+ReactDOM.createRoot(document.getElementById("root")).render(
+  React.createElement(App)
+);
 </script>
 
 </body>
